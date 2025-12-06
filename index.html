@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medical Pharma Quiz – 20 Questions</title>
+
+  <!-- EmailJS for sending PDF by email -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- jsPDF for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #111827;
+    }
+    .card {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #f9fafb;
+      border-radius: 20px;
+      box-shadow: 0 25px 35px rgba(0,0,0,0.15);
+      padding: 2.5rem 3rem;
+    }
+    h1,h2 { color:#111827; }
+    label { font-weight:600; display:block; margin-top:0.9rem; margin-bottom:0.25rem; }
+    input {
+      width:100%;
+      padding:0.8rem;
+      border-radius:10px;
+      border:2px solid #cbd5e1;
+      font-size:1rem;
+    }
+    input:focus {
+      outline:none;
+      border-color:#4facfe;
+      box-shadow:0 0 0 3px rgba(79,172,254,0.25);
+    }
+    button {
+      padding:0.9rem 1.8rem;
+      border-radius:12px;
+      border:none;
+      background:linear-gradient(135deg,#4facfe,#00f2fe);
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .25s ease;
+      font-size:1rem;
+    }
+    button:hover:not(:disabled) {
+      box-shadow:0 10px 25px rgba(79,172,254,.6);
+      transform:translateY(-2px);
+    }
+    button:disabled { opacity:.6; cursor:not-allowed; }
+    #startError { margin-top:0.75rem; color:#dc2626; font-weight:600; }
+
+    .header { text-align:center; margin-bottom:1.5rem; }
+    .header h1 { font-size:2.3rem; margin-bottom:0.3rem; }
+    #metaInfo { color:#4b5563; font-size:.95rem; }
+    #timer { margin-top:0.25rem; font-weight:600; }
+
+    .progress-bar {
+      background:#e5e7eb;
+      height:10px;
+      border-radius:5px;
+      overflow:hidden;
+      margin-top:1.3rem;
+    }
+    .progress-fill {
+      background:linear-gradient(90deg,#4facfe,#00f2fe);
+      height:100%; width:0%; transition:width .6s ease;
+    }
+
+    .question-block { margin-top:2rem; }
+    .q-header { display:flex; gap:1rem; align-items:flex-start; font-size:1.05rem; font-weight:600; }
+    .q-number {
+      width:40px; height:40px; border-radius:50%;
+      background:#4facfe; color:white; display:flex;
+      align-items:center; justify-content:center;
+      flex-shrink:0; font-weight:700;
+    }
+    .q-text { flex:1; }
+
+    .options { margin-top:1rem; display:grid; gap:12px; }
+    .option {
+      padding:0.9rem 1rem;
+      background:#ffffff;
+      border-radius:10px;
+      border:2px solid #cbd5e1;
+      cursor:pointer;
+      transition:all .25s ease;
+      font-size:.95rem;
+    }
+    .option:hover:not(.locked) {
+      border-color:#4facfe;
+      box-shadow:0 8px 15px rgba(79,172,254,.25);
+      transform:translateY(-2px);
+    }
+    .option.correct { background:#bbf7d0; border-color:#22c55e; color:#166534; }
+    .option.incorrect { background:#fecaca; border-color:#dc2626; color:#991b1b; }
+
+    .nav-row {
+      display:flex; justify-content:space-between; gap:1rem;
+      margin-top:2.3rem;
+    }
+    .nav-row button.btn-secondary { background:#64748b; }
+
+    #results { display:none; margin-top:2rem; text-align:center; }
+    #scoreDisplay { font-size:1.4rem; font-weight:700; margin-top:0.5rem; }
+    #statusMessage { margin-top:0.8rem; font-weight:600; font-size:.95rem; }
+
+    @media (max-width:768px) {
+      .card { padding:1.8rem 1.2rem; }
+      .nav-row { flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Start Screen -->
+<div class="card" id="startScreen">
+  <h2>👤 Participant Details</h2>
+  <p style="margin-top:0.5rem;color:#4b5563;">
+    Please enter your details to start the Medical Pharma Quiz.
+  </p>
+
+  <label for="studentName">Full Name</label>
+  <input id="studentName" type="text" placeholder="Enter your name" />
+
+  <label for="studentEmail">Email</label>
+  <input id="studentEmail" type="email" placeholder="Enter your email" />
+
+  <label for="studentContact">Contact Number</label>
+  <input id="studentContact" type="text" placeholder="Enter contact number" />
+
+  <button id="startBtn" style="margin-top:1.2rem;">🚀 Start Quiz</button>
+  <div id="startError"></div>
+</div>
+
+<!-- Quiz Screen -->
+<div class="card" id="quizCard" style="display:none;">
+  <div class="header">
+    <h1>Medical Pharma Quiz</h1>
+    <p id="metaInfo">20 Objective Questions · Auto‑scored · Time Tracked</p>
+    <p id="timer">Time: 00:00</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <div id="questionContainer" class="question-block"></div>
+
+  <div class="nav-row">
+    <button class="btn-secondary" id="prevBtn" disabled>← Previous</button>
+    <button id="nextBtn">Next →</button>
+  </div>
+
+  <div id="results">
+    <h2>Quiz Completed</h2>
+    <div id="scoreDisplay"></div>
+    <div id="statusMessage"></div>
+    <button id="restartBtn" style="margin-top:1.5rem;">🔄 Restart</button>
+  </div>
+</div>
+
+<script>
+  // ===== EmailJS CONFIG – using your values =====
+  emailjs.init('cnx5iLbhfFs0VbDxQ');                 // YOUR_PUBLIC_KEY
+  const EMAILJS_SERVICE_ID = 'service_8vldcn7';      // YOUR_SERVICE_ID
+  const EMAILJS_TEMPLATE_ID = 'template_wlhu3io';    // YOUR_TEMPLATE_ID
+  const RECEIVER_EMAIL     = 'malani86@gmail.com';   // where reports arrive
+
+  // ===== Participant & timer state =====
+  let candidateName = '';
+  let candidateEmail = '';
+  let candidateContact = '';
+  let seconds = 0;
+  let evaluated = false;
+
+  const timerEl = document.getElementById('timer');
+  setInterval(() => {
+    if (!evaluated && document.getElementById('quizCard').style.display !== 'none') {
+      seconds++;
+      const m = String(Math.floor(seconds/60)).padStart(2,'0');
+      const s = String(seconds%60).padStart(2,'0');
+      timerEl.textContent = `Time: ${m}:${s}`;
+    }
+  }, 1000);
+
+  // ===== Questions from Question.xlsx – objective only [file:151] =====
+  const questions = [
+    {
+      q:'1. What is the Best area (Size )of application of Divigel and which part of the Body.',
+      options:[
+        'A. 200 cm2 on the thigh',
+        'B. 200 m2 on the inner thigh',
+        'C. 400 cm2 on the thigh',
+        'D. 200 cm2 on the arms'
+      ],
+      answer:0
+    },
+    {
+      q:'2. Why do we need a only small area of application of Divigel ',
+      options:[
+        'A.Lower oestradiol absorption occurs due to a high concentration gradient and skin layers acting as reservoirs.',
+        'B. Higher oestradiol absorption occurs due to a high concentration gradient and skin layers acting as reservoirs.',
+        'C.Higher oestradiol absorption occurs due to a higher concentration gradient and skin layers acting as flow .',
+        'D.Higher oestradiol absorption occurs due to a steep concentration gradient and skin layers acting as channels.'
+      ],
+      answer:1
+    },
+    {
+      q:'3. How many % of women patients suffer from the no. main symtoms of Menopause based on Hedrick et al',
+      options:[
+        'A. 65%',
+        'B. 75%',
+        'C. 60%',
+        'D. 55%'
+      ],
+      answer:0
+    },
+    {
+      q:'4. Based on Dr Premitha MIMS write up pls select   symtoms of Menopause suffered by the patients ',
+      options:[
+        'A. Brain Fog , Hot Flushes, Fatigue, Physically Inactive',
+        'B. Brain Fog , Hot Flushes, Fatigue, Constant Hunger',
+        'C. Brain Fog , Hot Flushes, Fatigue, Reduced Libido',
+        'D. Brain Fog , Joint Pain, Fatigue, Depression'
+      ],
+      answer:2
+    },
+    {
+      q:'5. Write down 4 main contraindications of Divigel based on the Product Insert ',
+      options:[
+        'A. Currently have VTE , Sexual dysfunction, Breast Cancer , Endometrial Cancer',
+        'B. Breast Cancer, Endometrial Cancer, CVD History, Metabolic Disease',
+        'C. Breast Cancer Patients,Endometrial  Hyperplasia, Recent Myocardial Infarction, Active Liver Disease',
+        'D. None of the above'
+      ],
+      answer:2
+    },
+    {
+      q:'6. State the maximum of doses levodopa , entacapone and carbidopa can be consumed',
+      options:[
+        'A. Levodopa (1500mg),Carbidopa (200mg) and Entacapone (2050mg)',
+        'B. Levodopa (1200mg ),Carbidopa (150mg) and Entacapone (1800mg)',
+        'C.Levodopa (1500mg ),Carbidopa (200mg) and Entacapone (2000mg)',
+        'D.Levodopa (2000mg ),Carbidopa (250 mg) and Entacapone (35%) (2050mg)'
+      ],
+      answer:2
+    },
+    {
+      q:'7. Bioavailability of Stalevo 200mg oral dose  what is the % concentration of Levodopada, Carbidopa and Entacapone found',
+      options:[
+        'A. Levodopa (15-33%),Carbidopa (40-70%) and Entacapone (35%)',
+        'B. Levodopa (20-35%),Carbidopa (42-75%) and Entacapone (45%)',
+        'C.Levodopa (12.5-30%),Carbidopa (35-65%) and Entacapone (45%)',
+        'D.Levodopa (15-33%),Carbidopa (40-70%) and Entacapone (35%)'
+      ],
+      answer:0
+    },
+    {
+      q:'8. In  the study of Park et al what was the dose of stalevo given to the Study participants',
+      options:[
+        'A.Stalevo 200mg at night',
+        'B. Stalevo 100mg  at night',
+        'C.Levodopa equivalent dose of Stalevo at night',
+        'D. Stalevo 150mg at night'
+      ],
+      answer:2
+    },
+    {
+      q:'9. The Simcom Trial showed the benefits of reducing the pill count what were preference message .',
+      options:[
+        'A. Easier to handle, Easier to remember and Easier to swallow',
+        'B. Easier to handle, Easier to bring along and Better outcome',
+        'C. Easier to Remember , More simple to pack and Better outcome',
+        'D. More convient to use, More simple to pack and Easier to place'
+      ],
+      answer:0
+    },
+    {
+      q:'10. Nomecomt Study what was the mean "ON" time and the mean "OFF" time in the entacapone Group.',
+      options:[
+        'A. ON TIME (1.5 HOURS) ; OFF TIME (1.3 hours)',
+        'B.  ON TIME (1.3 HOURS) ; OFF TIME (1.5 hours)',
+        'C. ONTIME (1.3 HOURS); OFF TIME (1.3 HOURS)',
+        'D. ON TIME (1.2 HOURS) ; OFF TIME (1.3 HOURS)'
+      ],
+      answer:1
+    },
+    {
+      q:'11. In the Introduction of Sense study , LCE arm increases the bioavailability and plasma half life of Levodopa by ',
+      options:[
+        'A. 25-50%; 25-75%',
+        'B. 25-60%; 30-80%',
+        'C 25-75% ; 25-60%',
+        'D. 25-50% ; 40-80%'
+      ],
+      answer:0
+    },
+    {
+      q:'12. In KUOPPAMAKI et al the dosage of LCE vs CR-LC was',
+      options:[
+        'A. LCE 200mg; CR-LC 200mg',
+        'B. LCE 150mg; CR-LC 200mg',
+        'C. LCE 200mg; CR-LC 100mg',
+        'D.  LCE 150mg; CR-LC 150mg'
+      ],
+      answer:0
+    },
+    {
+      q:'13. In Patients expericing WO and Sleep disturbance, those taking bedtime Stalevo showed imporvements in motor and sleep symptoms at ',
+      options:[
+        'A. 1 month',
+        'B. 2 months',
+        'C. 6 weeks',
+        'D. 3 months'
+      ],
+      answer:3
+    },
+    {
+      q:'14. In the Lim Thien Thien write up what was the final Stalevo dosage ',
+      options:[
+        'A. Stalevo 100mg (2X)',
+        'B. Stalevo 100mg (3X)',
+        'C. Stalevo 100mg (4x)',
+        'D. Stalevo 150mg (2x)'
+      ],
+      answer:2
+    },
+    {
+      q:'15. Cuplaton Dosage for Patients with Post C-Section ',
+      options:[
+        'A. Two tablets a day',
+        'B. Three tablets a day',
+        'C. Four Tablets a day',
+        'D. Contraindicated'
+      ],
+      answer:2
+    },
+    {
+      q:'16. What are the core objective of the Direkwatanachai study? Is it To determine whether salbutamol delivered via pMDI + Volumatic® spacer or Easyhaler® (DPI) is as effective as nebulization in treating mild to moderate asthma exacerbations in pediatric patients. ',
+      options:[
+        'True',
+        'False'
+      ],
+      answer:0
+    },
+    {
+      q:'17. In Palandar et al what was the study about and the goal achieved with Easy haler ',
+      options:[
+        'A. Dose Delivery & Consistency',
+        'B. Dose Delivery & Resistance',
+        'C. Dose Delivery & Inspiratory flow',
+        'D. Dose Delivery and Flow Conditions'
+      ],
+      answer:0
+    },
+    {
+      q:'18. What is the Dosage of Budesionide that the symtomatic children started with  in Vanto et al over 24 weeks',
+      options:[
+        'A. (800mg -200mg )',
+        'B. (600mg- 400mg)',
+        'C. (800mg-400mg)',
+        'D. (800mg - 600mg)'
+      ],
+      answer:1
+    },
+    {
+      q:'19. Easyhaler was thought to be better in design and % of Patients would have chosen Easyhaler over Turbuhaler ',
+      options:[
+        'A. 56%',
+        'B. 64%',
+        'C. 63%',
+        'D. 65%'
+      ],
+      answer:1
+    },
+    {
+      q:'20. Simdax as an inodilator how many hours before a Bypass surgery should be administered',
+      options:[
+        'A. 12 Hours',
+        'B. 16 Hours',
+        'C. 18 Hours',
+        'D. 24 Hours'
+      ],
+      answer:3
+    }
+  ];
+
+  // ===== State & elements =====
+  let currentQuestion = 0;
+  let answers = {}; // index → selected option (0-based)
+
+  const startScreen = document.getElementById('startScreen');
+  const quizCard   = document.getElementById('quizCard');
+  const startBtn   = document.getElementById('startBtn');
+  const startError = document.getElementById('startError');
+
+  const questionContainer = document.getElementById('questionContainer');
+  const progressFill      = document.getElementById('progressFill');
+  const prevBtn           = document.getElementById('prevBtn');
+  const nextBtn           = document.getElementById('nextBtn');
+  const resultsDiv        = document.getElementById('results');
+  const scoreDisplay      = document.getElementById('scoreDisplay');
+  const restartBtn        = document.getElementById('restartBtn');
+  const statusMessage     = document.getElementById('statusMessage');
+
+  // Start screen
+  startBtn.addEventListener('click', () => {
+    const name  = document.getElementById('studentName').value.trim();
+    const email = document.getElementById('studentEmail').value.trim();
+    const phone = document.getElementById('studentContact').value.trim();
+    if (!name || !email || !phone) {
+      startError.textContent = 'Please fill in Name, Email and Contact Number.';
+      return;
+    }
+    candidateName    = name;
+    candidateEmail   = email;
+    candidateContact = phone;
+    startError.textContent = '';
+    startScreen.style.display = 'none';
+    quizCard.style.display   = 'block';
+    renderQuestion();
+  });
+
+  function renderQuestion() {
+    const q = questions[currentQuestion];
+    progressFill.style.width = ((currentQuestion)/questions.length)*100 + '%';
+
+    let html = `
+      <div class="q-header">
+        <div class="q-number">${currentQuestion+1}</div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      <div class="options">
+    `;
+    q.options.forEach((opt,idx)=>{
+      html += `<div class="option" data-index="${idx}">${opt}</div>`;
+    });
+    html += '</div>';
+
+    questionContainer.innerHTML = html;
+
+    const opts = document.querySelectorAll('.option');
+
+    opts.forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        // lock: if already answered once, ignore
+        if (answers[currentQuestion] !== undefined) return;
+
+        const idx = parseInt(opt.dataset.index);
+        answers[currentQuestion] = idx;
+
+        opts.forEach(o=>o.classList.add('locked'));
+        if (idx === q.answer) {
+          opt.classList.add('correct');
+        } else {
+          opt.classList.add('incorrect');
+          opts[q.answer].classList.add('correct');
+        }
+      });
+    });
+
+    // restore state when going back
+    if (answers[currentQuestion] !== undefined) {
+      const chosen = answers[currentQuestion];
+      opts.forEach(o=>o.classList.add('locked'));
+      if (chosen === q.answer) {
+        opts[chosen].classList.add('correct');
+      } else {
+        opts[chosen].classList.add('incorrect');
+        opts[q.answer].classList.add('correct');
+      }
+    }
+
+    prevBtn.disabled = currentQuestion === 0;
+    nextBtn.textContent = (currentQuestion === questions.length-1) ? 'Finish Quiz' : 'Next →';
+  }
+
+  prevBtn.addEventListener('click', ()=>{
+    if (currentQuestion>0) {
+      currentQuestion--;
+      renderQuestion();
+    }
+  });
+
+  nextBtn.addEventListener('click', ()=>{
+    if (currentQuestion < questions.length-1) {
+      currentQuestion++;
+      renderQuestion();
+    } else {
+      finishQuiz();
+    }
+  });
+
+  function finishQuiz() {
+    evaluated = true;
+    const totalQ = questions.length;
+    let correct = 0;
+    questions.forEach((q,i)=>{
+      if (answers[i] === q.answer) correct++;
+    });
+    scoreDisplay.textContent = `Your score: ${correct} / ${totalQ}`;
+    questionContainer.style.display = 'none';
+    document.querySelector('.nav-row').style.display = 'none';
+    resultsDiv.style.display = 'block';
+    generateAndEmailPDF(correct, totalQ);
+  }
+
+  async function generateAndEmailPDF(correct,totalQ) {
+    statusMessage.textContent = 'Generating report and sending email...';
+    statusMessage.className = '';
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const percent = Math.round((correct/totalQ)*100);
+      const m = String(Math.floor(seconds/60)).padStart(2,'0');
+      const s = String(seconds%60).padStart(2,'0');
+
+      doc.setFontSize(18);
+      doc.setTextColor(79,172,254);
+      doc.text('Medical Pharma Quiz Report', 14, 20);
+
+      doc.setFontSize(11);
+      doc.setTextColor(0,0,0);
+      doc.text(`Name: ${candidateName}`, 14, 32);
+      doc.text(`Email: ${candidateEmail}`, 14, 38);
+      doc.text(`Contact: ${candidateContact}`, 14, 44);
+      doc.text(`Score: ${correct} / ${totalQ} (${percent}%)`, 14, 52);
+      doc.text(`Time: ${m}:${s}`, 14, 58);
+      doc.line(14, 62, 196, 62);
+
+      let y = 70;
+      doc.setFontSize(13);
+      doc.text('Question-wise Details', 14, y);
+      y += 8;
+      doc.setFontSize(10);
+
+      questions.forEach((q,i)=>{
+        if (y>270) { doc.addPage(); y=20; }
+        const userAns = (answers[i] !== undefined) ? q.options[answers[i]] : 'Not answered';
+        const correctAns = q.options[q.answer];
+        const isCorrect = answers[i] === q.answer;
+        const status = isCorrect ? 'CORRECT' : (answers[i]===undefined?'UNANSWERED':'INCORRECT');
+
+        const qLines = doc.splitTextToSize(`Q${i+1}: ${q.q}`, 180);
+        doc.text(qLines, 14, y);
+        y += qLines.length*4 + 2;
+
+        doc.text(`Your answer: ${userAns}`, 14, y);
+        y += 4;
+        doc.text(`Correct answer: ${correctAns}`, 14, y);
+        y += 4;
+        doc.text(`Result: ${status}`, 14, y);
+        y += 8;
+      });
+
+      const pdfDataUri = doc.output('datauristring');
+      const base64Pdf = pdfDataUri.split(',')[1];
+
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email: RECEIVER_EMAIL,
+        from_name: candidateName,
+        from_email: candidateEmail,
+        contact: candidateContact,
+        score: `${correct}/${totalQ} (${percent}%)`,
+        time_used: `${m}:${s}`,
+        pdf_report: base64Pdf
+      });
+
+      statusMessage.textContent = '✅ Report emailed to admin successfully.';
+      statusMessage.className = 'status-msg success';
+    } catch (e) {
+      console.error(e);
+      statusMessage.textContent = '❌ Error generating/sending report: ' + e.message;
+      statusMessage.className = 'status-msg error';
+    }
+  }
+
+  restartBtn.addEventListener('click', ()=>{ location.reload(); });
+</script>
+</body>
+</html>
