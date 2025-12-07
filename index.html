@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Medical Pharma Quiz – 20 Questions</title>
 
-  <!-- EmailJS for sending PDF by email -->
+  <!-- EmailJS for sending results by email -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <!-- jsPDF for PDF generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -96,13 +94,17 @@
       transition:all .25s ease;
       font-size:.95rem;
     }
-    .option:hover:not(.locked) {
+    .option:hover {
       border-color:#4facfe;
       box-shadow:0 8px 15px rgba(79,172,254,.25);
       transform:translateY(-2px);
     }
-    .option.correct { background:#bbf7d0; border-color:#22c55e; color:#166534; }
-    .option.incorrect { background:#fecaca; border-color:#dc2626; color:#991b1b; }
+    .option.selected {
+      background-color:#e0f2fe;
+      border-color:#0284c7;
+      color:#0c4a6e;
+      font-weight:600;
+    }
 
     .nav-row {
       display:flex; justify-content:space-between; gap:1rem;
@@ -126,17 +128,11 @@
 <div class="card" id="startScreen">
   <h2>👤 Participant Details</h2>
   <p style="margin-top:0.5rem;color:#4b5563;">
-    Please enter your details to start the Medical Pharma Quiz.
+    Please enter your Name to start the Medical Pharma Quiz.
   </p>
 
   <label for="studentName">Full Name</label>
   <input id="studentName" type="text" placeholder="Enter your name" />
-
-  <label for="studentEmail">Email</label>
-  <input id="studentEmail" type="email" placeholder="Enter your email" />
-
-  <label for="studentContact">Contact Number</label>
-  <input id="studentContact" type="text" placeholder="Enter contact number" />
 
   <button id="startBtn" style="margin-top:1.2rem;">🚀 Start Quiz</button>
   <div id="startError"></div>
@@ -146,7 +142,7 @@
 <div class="card" id="quizCard" style="display:none;">
   <div class="header">
     <h1>Medical Pharma Quiz</h1>
-    <p id="metaInfo">20 Objective Questions · Auto‑scored · Time Tracked</p>
+    <p id="metaInfo">20 Questions · Time Tracked</p>
     <p id="timer">Time: 00:00</p>
   </div>
 
@@ -170,16 +166,14 @@
 </div>
 
 <script>
-  // ===== EmailJS CONFIG – using your values =====
-  emailjs.init('cnx5iLbhfFs0VbDxQ');                 // YOUR_PUBLIC_KEY
-  const EMAILJS_SERVICE_ID = 'service_8vldcn7';      // YOUR_SERVICE_ID
-  const EMAILJS_TEMPLATE_ID = 'template_wlhu3io';    // YOUR_TEMPLATE_ID
-  const RECEIVER_EMAIL     = 'malani86@gmail.com';   // where reports arrive
+  // ===== EmailJS CONFIG – MEDI QUIZ- HEMAL MALANI =====
+  emailjs.init('jpLkp6a1AzI_yB508');           // Public Key
+  const EMAILJS_SERVICE_ID = 'service_kxs2x4e';
+  const EMAILJS_TEMPLATE_ID = 'template_4z1ufu4';
+  const RECEIVER_EMAIL     = 'malani86@gmail.com';
 
   // ===== Participant & timer state =====
   let candidateName = '';
-  let candidateEmail = '';
-  let candidateContact = '';
   let seconds = 0;
   let evaluated = false;
 
@@ -193,17 +187,17 @@
     }
   }, 1000);
 
-  // ===== Questions from Question.xlsx – objective only [file:151] =====
+  // ===== Questions list (with updated Q1 and Q18) =====
   const questions = [
     {
-      q:'1. What is the Best area (Size )of application of Divigel and which part of the Body.',
+      q:'1. What is the Best area (Size) of application of Divigel and which part of the Body.',
       options:[
-        'A. 200 cm2 on the thigh',
-        'B. 200 m2 on the inner thigh',
-        'C. 400 cm2 on the thigh',
-        'D. 200 cm2 on the arms'
+        'A. 200 cm² on the arms',
+        'B. 200 m² on the inner thigh',
+        'C. 400 cm² on the thigh',
+        'D. 200 cm² on the arms'
       ],
-      answer:0
+      answer:1
     },
     {
       q:'2. Why do we need a only small area of application of Divigel ',
@@ -364,14 +358,14 @@
       answer:0
     },
     {
-      q:'18. What is the Dosage of Budesionide that the symtomatic children started with  in Vanto et al over 24 weeks',
+      q:'18. What is the Dosage of Budesionide that the symtomatic children started and followed through with in Vanto et al over 24 weeks',
       options:[
-        'A. (800mg -200mg )',
-        'B. (600mg- 400mg)',
-        'C. (800mg-400mg)',
-        'D. (800mg - 600mg)'
+        'A. (800mg-400mg)',
+        'B. (600mg-400mg)',
+        'C. (800mg-200mg)',
+        'D. (800mg-600mg)'
       ],
-      answer:1
+      answer:2
     },
     {
       q:'19. Easyhaler was thought to be better in design and % of Patients would have chosen Easyhaler over Turbuhaler ',
@@ -413,18 +407,14 @@
   const restartBtn        = document.getElementById('restartBtn');
   const statusMessage     = document.getElementById('statusMessage');
 
-  // Start screen
+  // Start screen logic
   startBtn.addEventListener('click', () => {
     const name  = document.getElementById('studentName').value.trim();
-    const email = document.getElementById('studentEmail').value.trim();
-    const phone = document.getElementById('studentContact').value.trim();
-    if (!name || !email || !phone) {
-      startError.textContent = 'Please fill in Name, Email and Contact Number.';
+    if (!name) {
+      startError.textContent = 'Please enter your Name.';
       return;
     }
-    candidateName    = name;
-    candidateEmail   = email;
-    candidateContact = phone;
+    candidateName = name;
     startError.textContent = '';
     startScreen.style.display = 'none';
     quizCard.style.display   = 'block';
@@ -443,7 +433,8 @@
       <div class="options">
     `;
     q.options.forEach((opt,idx)=>{
-      html += `<div class="option" data-index="${idx}">${opt}</div>`;
+      const isSelected = (answers[currentQuestion] === idx) ? 'selected' : '';
+      html += `<div class="option ${isSelected}" data-index="${idx}">${opt}</div>`;
     });
     html += '</div>';
 
@@ -453,36 +444,15 @@
 
     opts.forEach(opt=>{
       opt.addEventListener('click', ()=>{
-        // lock: if already answered once, ignore
-        if (answers[currentQuestion] !== undefined) return;
-
         const idx = parseInt(opt.dataset.index);
         answers[currentQuestion] = idx;
-
-        opts.forEach(o=>o.classList.add('locked'));
-        if (idx === q.answer) {
-          opt.classList.add('correct');
-        } else {
-          opt.classList.add('incorrect');
-          opts[q.answer].classList.add('correct');
-        }
+        opts.forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
       });
     });
 
-    // restore state when going back
-    if (answers[currentQuestion] !== undefined) {
-      const chosen = answers[currentQuestion];
-      opts.forEach(o=>o.classList.add('locked'));
-      if (chosen === q.answer) {
-        opts[chosen].classList.add('correct');
-      } else {
-        opts[chosen].classList.add('incorrect');
-        opts[q.answer].classList.add('correct');
-      }
-    }
-
     prevBtn.disabled = currentQuestion === 0;
-    nextBtn.textContent = (currentQuestion === questions.length-1) ? 'Finish Quiz' : 'Next →';
+    nextBtn.textContent = (currentQuestion === questions.length-1) ? 'Lock & Submit' : 'Next →';
   }
 
   prevBtn.addEventListener('click', ()=>{
@@ -508,80 +478,53 @@
     questions.forEach((q,i)=>{
       if (answers[i] === q.answer) correct++;
     });
+
     scoreDisplay.textContent = `Your score: ${correct} / ${totalQ}`;
     questionContainer.style.display = 'none';
     document.querySelector('.nav-row').style.display = 'none';
     resultsDiv.style.display = 'block';
-    generateAndEmailPDF(correct, totalQ);
+
+    generateAndEmailResults(correct, totalQ);
   }
 
-  async function generateAndEmailPDF(correct,totalQ) {
-    statusMessage.textContent = 'Generating report and sending email...';
+  async function generateAndEmailResults(correct, totalQ) {
+    statusMessage.textContent = 'Submitting results...';
     statusMessage.className = '';
-    try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
 
+    try {
       const percent = Math.round((correct/totalQ)*100);
       const m = String(Math.floor(seconds/60)).padStart(2,'0');
       const s = String(seconds%60).padStart(2,'0');
 
-      doc.setFontSize(18);
-      doc.setTextColor(79,172,254);
-      doc.text('Medical Pharma Quiz Report', 14, 20);
+      // Build HTML table with selected options
+      let tableHtml = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:Arial, sans-serif;font-size:12px;">';
+      tableHtml += '<thead><tr style="background:#e5e7eb;"><th align="left">Q.No</th><th align="left">Question</th><th align="left">Selected Option</th></tr></thead><tbody>';
 
-      doc.setFontSize(11);
-      doc.setTextColor(0,0,0);
-      doc.text(`Name: ${candidateName}`, 14, 32);
-      doc.text(`Email: ${candidateEmail}`, 14, 38);
-      doc.text(`Contact: ${candidateContact}`, 14, 44);
-      doc.text(`Score: ${correct} / ${totalQ} (${percent}%)`, 14, 52);
-      doc.text(`Time: ${m}:${s}`, 14, 58);
-      doc.line(14, 62, 196, 62);
-
-      let y = 70;
-      doc.setFontSize(13);
-      doc.text('Question-wise Details', 14, y);
-      y += 8;
-      doc.setFontSize(10);
-
-      questions.forEach((q,i)=>{
-        if (y>270) { doc.addPage(); y=20; }
-        const userAns = (answers[i] !== undefined) ? q.options[answers[i]] : 'Not answered';
-        const correctAns = q.options[q.answer];
-        const isCorrect = answers[i] === q.answer;
-        const status = isCorrect ? 'CORRECT' : (answers[i]===undefined?'UNANSWERED':'INCORRECT');
-
-        const qLines = doc.splitTextToSize(`Q${i+1}: ${q.q}`, 180);
-        doc.text(qLines, 14, y);
-        y += qLines.length*4 + 2;
-
-        doc.text(`Your answer: ${userAns}`, 14, y);
-        y += 4;
-        doc.text(`Correct answer: ${correctAns}`, 14, y);
-        y += 4;
-        doc.text(`Result: ${status}`, 14, y);
-        y += 8;
+      questions.forEach((q, i) => {
+        const userAnsIdx = answers[i];
+        const userAnsText = userAnsIdx !== undefined ? q.options[userAnsIdx] : 'Not answered';
+        tableHtml += `<tr>
+          <td>${i + 1}</td>
+          <td>${q.q}</td>
+          <td>${userAnsText}</td>
+        </tr>`;
       });
 
-      const pdfDataUri = doc.output('datauristring');
-      const base64Pdf = pdfDataUri.split(',')[1];
+      tableHtml += '</tbody></table>';
 
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
         to_email: RECEIVER_EMAIL,
         from_name: candidateName,
-        from_email: candidateEmail,
-        contact: candidateContact,
         score: `${correct}/${totalQ} (${percent}%)`,
         time_used: `${m}:${s}`,
-        pdf_report: base64Pdf
+        answers_table: tableHtml
       });
 
-      statusMessage.textContent = '✅ Report emailed to admin successfully.';
+      statusMessage.textContent = '✅ Results submitted successfully.';
       statusMessage.className = 'status-msg success';
     } catch (e) {
       console.error(e);
-      statusMessage.textContent = '❌ Error generating/sending report: ' + e.message;
+      statusMessage.textContent = '❌ Submission error. Please contact admin.';
       statusMessage.className = 'status-msg error';
     }
   }
