@@ -113,7 +113,17 @@
 
     #results { display:none; margin-top:2rem; text-align:center; }
     #scoreDisplay { font-size:1.4rem; font-weight:700; margin-top:0.5rem; }
-    #statusMessage { margin-top:0.8rem; font-weight:600; font-size:.95rem; }
+    
+    /* Error/Success Message Styling */
+    #statusMessage { 
+      margin-top:0.8rem; 
+      font-weight:600; 
+      font-size:.95rem; 
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .status-msg.success { color: #15803d; background: #dcfce7; border: 1px solid #bbf7d0; }
+    .status-msg.error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; }
 
     @media (max-width:768px) {
       .card { padding:1.8rem 1.2rem; }
@@ -164,7 +174,13 @@
 
 <script>
   // ===== EmailJS CONFIG – MEDI QUIZ- HEMAL MALANI =====
-  emailjs.init('jpLkp6a1AzI_yB508');           // Public Key
+  // UPDATED: Using object syntax for v4 initialization to prevent errors
+  try {
+    emailjs.init({ publicKey: 'jpLkp6a1AzI_yB508' });
+  } catch(e) {
+    console.warn("EmailJS Init Warning:", e);
+  }
+
   const EMAILJS_SERVICE_ID = 'service_kxs2x4e';
   const EMAILJS_TEMPLATE_ID = 'template_4z1ufu4';
   const RECEIVER_EMAIL     = 'malani86@gmail.com';
@@ -252,7 +268,7 @@
         'C. Stalevo 175mg',
         'D. A & B'
       ],
-      answer:3 // Answer: D (A&B)
+      answer:3 // Answer: D
     },
     {
       q:'8. Switching to Stalevo was associated with improved patient’s CGI-C score with __________ of patients reported an ‘improvement’.',
@@ -518,8 +534,14 @@
       statusMessage.textContent = '✅ Results submitted successfully.';
       statusMessage.className = 'status-msg success';
     } catch (e) {
-      console.error(e);
-      statusMessage.textContent = '❌ Submission error. Please contact admin.';
+      console.error("Submission Failed:", e);
+      // Detailed error message for debugging
+      let errorMsg = 'Unknown Error';
+      if (e.text) errorMsg = e.text;
+      else if (e.message) errorMsg = e.message;
+      else errorMsg = JSON.stringify(e);
+      
+      statusMessage.textContent = `❌ Submission Error: ${errorMsg}. Please contact admin.`;
       statusMessage.className = 'status-msg error';
     }
   }
