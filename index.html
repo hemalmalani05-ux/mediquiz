@@ -174,14 +174,13 @@
 </div>
 
 <script>
-  // ===== EmailJS CONFIGURATION =====
-  // 1. Keys & IDs
+  // ===== EmailJS CONFIGURATION (AUDITED) =====
   const PUBLIC_KEY = 'jpLkp6a1AzI_yB508';
-  const SERVICE_ID = 'service_kxs2x4e';
-  const TEMPLATE_ID = 'template_o5edseb'; // Updated Template ID
+  const SERVICE_ID = 'service_kxs2x4e';     // Confirmed Service ID
+  const TEMPLATE_ID = 'template_o5edseb';   // Confirmed Template ID
   const RECEIVER_EMAIL = 'malani86@gmail.com';
 
-  // 2. Initialize EmailJS safely
+  // Safely Initialize EmailJS
   (function() {
     try {
       if (typeof emailjs !== 'undefined') {
@@ -195,7 +194,7 @@
     }
   })();
 
-  // ===== DATA: 20 Questions (Audited) =====
+  // ===== DATA: 20 Questions (Audited against CSV) =====
   const questions = [
     {
       q:'1. What is the Best area (Size )of application of Divigel and which part of the Body.',
@@ -205,7 +204,7 @@
         'C. 400 cm2 on the thigh',
         'D. 200 cm2 on the arms'
       ],
-      answer:1 // B
+      answer:1 // CSV Answer: B
     },
     {
       q:'2. Why do we need a only small area of application of Divigel',
@@ -215,12 +214,12 @@
         'C. Higher oestradiol absorption occurs due to a higher concentration gradient and skin layers acting as flow.',
         'D. Higher oestradiol absorption occurs due to a steep concentration gradient and skin layers acting as channels.'
       ],
-      answer:1 // B
+      answer:1 // CSV Answer: B
     },
     {
       q:'3. Patients On Mirena need to take oral progesteron',
       options:['True', 'False'],
-      answer:1 // False
+      answer:1 // CSV Answer: False
     },
     {
       q:'4. Divigel should be applied how many times a day',
@@ -230,7 +229,7 @@
         'C. Thrice a Day',
         'D. None of the above'
       ],
-      answer:0 // A
+      answer:0 // CSV Answer: A
     },
     {
       q:'5. Hedrick et al., (2009) is a phase III, randomized, double-blind, parallel group, placebo-controlled, multicenter trial that was designed to compare the efficacy of ________________________________________________ with placebo for the treatment of MSVMS in postmenopausal women.',
@@ -240,7 +239,7 @@
         'C. 0.5, 1.0 and 1.5 g of E2 gel 0.1%',
         'D. 0.25, 0.6, and 1.0 g of E2 gel 0.1%'
       ],
-      answer:1 // B
+      answer:1 // CSV Answer: B
     },
     {
       q:'6. State the maximum of doses levodopa , entacapone and carbidopa can be consumed',
@@ -250,7 +249,7 @@
         'C. Levodopa (1500mg ),Carbidopa (375mg) and Entacapone (2000mg)',
         'D. Levodopa (2000mg ),Carbidopa (250 mg) and Entacapone (2050mg)'
       ],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     },
     {
       q:'7. Stalevo Dosage availability in Malaysia',
@@ -260,12 +259,12 @@
         'C. Stalevo 175mg',
         'D. A & B'
       ],
-      answer:3 // D
+      answer:3 // CSV Answer: D (A&B)
     },
     {
       q:'8. Switching to Stalevo was associated with improved patient’s CGI-C score with __________ of patients reported an ‘improvement’.',
       options:['A. 24%', 'B. 28%', 'C. 77%', 'D. 86%'],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     },
     {
       q:'9. In Eggert et al. (2010), patients who switched to LCE observed significant improvements in: i. UPDRS-ADL, Part II; ii. UPDRS motor, Part III; iii. tremor, rigidity and akinesia; iv. QoL-VAS scores',
@@ -275,7 +274,7 @@
         'C. iii, iv',
         'D. i, ii, iii, iv'
       ],
-      answer:3 // D
+      answer:3 // CSV Answer: D
     },
     {
       q:'10. Nomecomt Study what was the mean "ON" time and the mean "OFF" time in the entacapone Group.',
@@ -285,12 +284,12 @@
         'C. ONTIME (1.3 HOURS); OFF TIME (1.3 HOURS)',
         'D. ON TIME (1.2 HOURS) ; OFF TIME (1.3 HOURS)'
       ],
-      answer:1 // B
+      answer:1 // CSV Answer: B
     },
     {
       q:'11. Among the PDSS items for all 39 patients who took bedtime Stalevo and completed the study, significant improvements are observed in __________ out of the 15 PDSS items.',
       options:['A. 4', 'B. 5', 'C. 6', 'D. 7'],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     },
     {
       q:'12. In KUOPPAMAKI et al the dosage of LCE vs CR-LC was',
@@ -300,12 +299,12 @@
         'C. LCE 200mg; CR-LC 100mg',
         'D. LCE 150mg; CR-LC 150mg'
       ],
-      answer:0 // A
+      answer:0 // CSV Answer: A
     },
     {
       q:'13. In Patients expericing WO and Sleep disturbance, those taking bedtime Stalevo showed imporvements in motor and sleep symptoms at',
       options:['A. 1 month', 'B. 2 months', 'C. 6 weeks', 'D. 3 months'],
-      answer:3 // D
+      answer:3 // CSV Answer: D
     },
     {
       q:'14. In the Lim Thien Thien write up what was the final Stalevo dosage',
@@ -315,7 +314,7 @@
         'C. Stalevo 100mg (4x)',
         'D. Stalevo 150mg (2x)'
       ],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     },
     {
       q:'15. Cuplaton Dosage for Patients with Post C-Section',
@@ -325,12 +324,12 @@
         'C. Four Tablets a day',
         'D. Contraindicated'
       ],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     },
     {
       q:'16. What are the core objective of the Direkwatanachai study? Is it To determine whether salbutamol delivered via pMDI + Volumatic® spacer or Easyhaler® (DPI) is as effective as nebulization in treating mild to moderate asthma exacerbations in pediatric patients.',
       options:['True', 'False'],
-      answer:0 // True
+      answer:0 // CSV Answer: True
     },
     {
       q:'17. In Palandar et al what was the study about and the goal achieved with Easy haler',
@@ -340,7 +339,7 @@
         'C. Dose Delivery & Inspiratory flow',
         'D. Dose Delivery and Flow Conditions'
       ],
-      answer:0 // A
+      answer:0 // CSV Answer: A
     },
     {
       q:'18. What is the Dosage of Budesionide that the symtomatic children started and followed through with in Vanto et al over 24 weeks',
@@ -350,7 +349,7 @@
         'C. (800mg - 200mg)',
         'D. (800mg - 600mg)'
       ],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     },
     {
       q:'19. Direkwatanachai et al., (2011) is a multicenter, randomized, controlled study that was conducted in children between 5 and 18 years of age who presented at an emergency or outpatient department. They were randomized to receive either i. 6 puffs of salbutamol via the pMDI with Volumatic®spacer, ii. 6 puffs of salbutamol via the Easyhaler iii. 0.15 mg/kg of salbutamol nebulized via oxygen (or compressed air) iv. placebo',
@@ -360,7 +359,7 @@
         'C. i, ii, iv',
         'D. ii, iv'
       ],
-      answer:1 // B
+      answer:1 // CSV Answer: B
     },
     {
       q:'20. Simdax as an inodilator how many hours before a that binds to which part of the mucle cell',
@@ -370,7 +369,7 @@
         'C. tropomyosin',
         'D. tropomodulin'
       ],
-      answer:2 // C
+      answer:2 // CSV Answer: C
     }
   ];
 
