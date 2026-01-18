@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Medical Pharma Quiz – 20 Questions</title>
 
-  <!-- EmailJS for sending results by email -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
@@ -124,7 +123,6 @@
 </head>
 <body>
 
-<!-- Start Screen -->
 <div class="card" id="startScreen">
   <h2>👤 Participant Details</h2>
   <p style="margin-top:0.5rem;color:#4b5563;">
@@ -138,7 +136,6 @@
   <div id="startError"></div>
 </div>
 
-<!-- Quiz Screen -->
 <div class="card" id="quizCard" style="display:none;">
   <div class="header">
     <h1>Medical Pharma Quiz</h1>
@@ -187,37 +184,35 @@
     }
   }, 1000);
 
-  // ===== Questions list (typo removed from Q17) =====
+  // ===== Questions list (AUDITED & REPLACED from NEW EXCEL) =====
   const questions = [
     {
       q:'1. What is the Best area (Size )of application of Divigel and which part of the Body.',
       options:[
-        'A. 200 cm2 on the arms,',
-        'B. 200 cm2 on the inner thigh,',
+        'A. 200 cm2 on the arms',
+        'B. 200 cm2 on the inner thigh',
         'C. 400 cm2 on the thigh',
         'D. 200 cm2 on the arms'
       ],
-      answer:1
+      answer:1 // Answer: B
     },
     {
       q:'2. Why do we need a only small area of application of Divigel',
       options:[
-        'A.Lower oestradiol absorption occurs due to a high concentration gradient and skin layers acting as reservoirs.',
+        'A. Lower oestradiol absorption occurs due to a high concentration gradient and skin layers acting as reservoirs.',
         'B. Higher oestradiol absorption occurs due to a high concentration gradient and skin layers acting as reservoirs.',
-        'C.Higher oestradiol absorption occurs due to a higher concentration gradient and skin layers acting as flow .',
-        'D.Higher oestradiol absorption occurs due to a steep concentration gradient and skin layers acting as channels.'
+        'C. Higher oestradiol absorption occurs due to a higher concentration gradient and skin layers acting as flow.',
+        'D. Higher oestradiol absorption occurs due to a steep concentration gradient and skin layers acting as channels.'
       ],
-      answer:1
+      answer:1 // Answer: B
     },
     {
-      q:'3. How Many Sachets in One box of Divigel',
+      q:'3. Patients On Mirena need to take oral progesteron',
       options:[
-        'A. 28,',
-        'B. 30',
-        'C. 31',
-        'D. 29'
+        'True',
+        'False'
       ],
-      answer:0
+      answer:1 // Answer: False
     },
     {
       q:'4. Divigel should be applied how many times a day',
@@ -227,103 +222,107 @@
         'C. Thrice a Day',
         'D. None of the above'
       ],
-      answer:0
+      answer:0 // Answer: A
     },
     {
-      q:'5. Select  1 main contraindications of Divigel based on the Product Insert',
+      q:'5. Hedrick et al., (2009) is a phase III, randomized, double-blind, parallel group, placebo-controlled, multicenter trial that was designed to compare the efficacy of ________________________________________________ with placebo for the treatment of MSVMS in postmenopausal women.',
       options:[
-        'A.  Breast Cancer',
-        'B.  Metabolic Disease',
-        'C. Joint Pain',
-        'D. Psychiatry'
+        'A. 0.5, 1.0 and 1.5 mg of E2 gel 0.1%',
+        'B. 0.25, 0.5, and 1.0 mg of E2 gel 0.1%',
+        'C. 0.5, 1.0 and 1.5 g of E2 gel 0.1%',
+        'D. 0.25, 0.6, and 1.0 g of E2 gel 0.1%'
       ],
-      answer:0
+      answer:1 // Answer: B
     },
     {
       q:'6. State the maximum of doses levodopa , entacapone and carbidopa can be consumed',
       options:[
-        'A. Levodopa (1500mg),Carbidopa (200mg) and Entacapone (2050mg) ,',
-        'B. Levodopa (1200mg ),Carbidopa (150mg) and Entacapone (1800mg),',
-        'C.Levodopa (1500mg ),Carbidopa (375mg) and Entacapone (2000mg),',
-        'D.Levodopa (2000mg ),Carbidopa (250 mg) and Entacapone (2050mg)'
+        'A. Levodopa (1500mg),Carbidopa (200mg) and Entacapone (2050mg)',
+        'B. Levodopa (1200mg ),Carbidopa (150mg) and Entacapone (1800mg)',
+        'C. Levodopa (1500mg ),Carbidopa (375mg) and Entacapone (2000mg)',
+        'D. Levodopa (2000mg ),Carbidopa (250 mg) and Entacapone (2050mg)'
       ],
-      answer:2
+      answer:2 // Answer: C
     },
     {
       q:'7. Stalevo Dosage availability in Malaysia',
       options:[
-        'A. Stalevo 50mg ,',
-        'B. Stalevo 100mg,',
-        'C.Stalevo 175mg',
-        'D.A&B'
+        'A. Stalevo 50mg',
+        'B. Stalevo 100mg',
+        'C. Stalevo 175mg',
+        'D. A & B'
       ],
-      answer:3
+      answer:3 // Answer: D (A&B)
     },
     {
-      q:'8. In the study of Park et al, Sleep is it a motor function',
+      q:'8. Switching to Stalevo was associated with improved patient’s CGI-C score with __________ of patients reported an ‘improvement’.',
       options:[
-        'True',
-        'False'
+        'A. 24%',
+        'B. 28%',
+        'C. 77%',
+        'D. 86%'
       ],
-      answer:1
+      answer:2 // Answer: C
     },
     {
-      q:'9. The Simcom Trial showed the benefits of reducing pill count',
+      q:'9. In Eggert et al. (2010), patients who switched to LCE observed significant improvements in: i. UPDRS-ADL, Part II; ii. UPDRS motor, Part III; iii. tremor, rigidity and akinesia; iv. QoL-VAS scores',
       options:[
-        'True',
-        'False'
+        'A. i, ii',
+        'B. i, ii, iv',
+        'C. iii, iv',
+        'D. i, ii, iii, iv'
       ],
-      answer:0
+      answer:3 // Answer: D
     },
     {
       q:'10. Nomecomt Study what was the mean "ON" time and the mean "OFF" time in the entacapone Group.',
       options:[
-        'A. ON TIME (1.5 HOURS) ; OFF TIME (1.3 hours),',
-        'B. ON TIME (1.3 HOURS) ; OFF TIME (1.5 hours),',
-        'C. ONTIME (1.3 HOURS); OFF TIME (1.3 HOURS),',
+        'A. ON TIME (1.5 HOURS) ; OFF TIME (1.3 hours)',
+        'B. ON TIME (1.3 HOURS) ; OFF TIME (1.5 hours)',
+        'C. ONTIME (1.3 HOURS); OFF TIME (1.3 HOURS)',
         'D. ON TIME (1.2 HOURS) ; OFF TIME (1.3 HOURS)'
       ],
-      answer:1
+      answer:1 // Answer: B
     },
     {
-      q:'11. In the Introduction of Sense study , LCE arm increases the bioavailability and plasma of',
+      q:'11. Among the PDSS items for all 39 patients who took bedtime Stalevo and completed the study, significant improvements are observed in __________ out of the 15 PDSS items.',
       options:[
-        'A. Levodopa,',
-        'B. Entacapone,',
-        'C. Carbidopa',
-        'D. Safinamide'
+        'A. 4',
+        'B. 5',
+        'C. 6',
+        'D. 7'
       ],
-      answer:0
+      answer:2 // Answer: C
     },
     {
       q:'12. In KUOPPAMAKI et al the dosage of LCE vs CR-LC was',
       options:[
-        'A. LCE 200mg; CR-LC 200mg,',
-        'B. LCE 150mg; CR-LC 200mg,',
+        'A. LCE 200mg; CR-LC 200mg',
+        'B. LCE 150mg; CR-LC 200mg',
         'C. LCE 200mg; CR-LC 100mg',
         'D. LCE 150mg; CR-LC 150mg'
       ],
-      answer:0
+      answer:0 // Answer: A
     },
     {
       q:'13. In Patients expericing WO and Sleep disturbance, those taking bedtime Stalevo showed imporvements in motor and sleep symptoms at',
       options:[
-        'A. 1 month,',
-        'B. 2 months,',
-        'C. 6 weeks,',
+        'A. 1 month',
+        'B. 2 months',
+        'C. 6 weeks',
         'D. 3 months'
       ],
-      answer:3
+      answer:3 // Answer: D
     },
     {
       q:'14. In the Lim Thien Thien write up what was the final Stalevo dosage',
       options:[
-        'A. Stalevo 100mg (2X),',
-        'B. Stalevo 100mg (3X),',
+        'A. Stalevo 100mg (2X)',
+        'B. Stalevo 100mg (3X)',
         'C. Stalevo 100mg (4x)',
         'D. Stalevo 150mg (2x)'
       ],
-      answer:2
+      answer:2 // Answer: C
     },
     {
       q:'15. Cuplaton Dosage for Patients with Post C-Section',
@@ -333,7 +332,7 @@
         'C. Four Tablets a day',
         'D. Contraindicated'
       ],
-      answer:2
+      answer:2 // Answer: C
     },
     {
       q:'16. What are the core objective of the Direkwatanachai study? Is it To determine whether salbutamol delivered via pMDI + Volumatic® spacer or Easyhaler® (DPI) is as effective as nebulization in treating mild to moderate asthma exacerbations in pediatric patients.',
@@ -341,47 +340,47 @@
         'True',
         'False'
       ],
-      answer:0
+      answer:0 // Answer: True
     },
     {
       q:'17. In Palandar et al what was the study about and the goal achieved with Easy haler',
       options:[
-        'A. Dose Delivery & Consistency,',
-        'B. Dose Delivery & Resistance ,',
-        'C. Dose Delivery & Inspiratory flow,',
+        'A. Dose Delivery & Consistency',
+        'B. Dose Delivery & Resistance',
+        'C. Dose Delivery & Inspiratory flow',
         'D. Dose Delivery and Flow Conditions'
       ],
-      answer:0
+      answer:0 // Answer: A
     },
     {
       q:'18. What is the Dosage of Budesionide that the symtomatic children started and followed through with in Vanto et al over 24 weeks',
       options:[
-        'A. (800mg -400mg )',
-        'B. (600mg- 400mg)',
-        'C. (800mg-200mg)',
+        'A. (800mg - 400mg)',
+        'B. (600mg - 400mg)',
+        'C. (800mg - 200mg)',
         'D. (800mg - 600mg)'
       ],
-      answer:2
+      answer:2 // Answer: C
     },
     {
-      q:'19. Easyhaler PIF Rate is',
+      q:'19. Direkwatanachai et al., (2011) is a multicenter, randomized, controlled study that was conducted in children between 5 and 18 years of age who presented at an emergency or outpatient department. They were randomized to receive either i. 6 puffs of salbutamol via the pMDI with Volumatic®spacer, ii. 6 puffs of salbutamol via the Easyhaler iii. 0.15 mg/kg of salbutamol nebulized via oxygen (or compressed air) iv. placebo',
       options:[
-        'A. 30',
-        'B. 35',
-        'C. 60',
-        'D. 55'
+        'A. i, ii',
+        'B. i, ii, iii',
+        'C. i, ii, iv',
+        'D. ii, iv'
       ],
-      answer:0
+      answer:1 // Answer: B
     },
     {
-      q:'20. Simdax as an inodilator how many hours before a Bypass surgery should be administered',
+      q:'20. Simdax as an inodilator how many hours before a that binds to which part of the mucle cell',
       options:[
-        'A. 12 Hours',
-        'B. 16 Hours',
-        'C. 18 Hours',
-        'D. 24 Hours'
+        'A. troponin',
+        'B. myosin',
+        'C. tropomyosin',
+        'D. tropomodulin'
       ],
-      answer:3
+      answer:2 // Answer: C
     }
   ];
 
