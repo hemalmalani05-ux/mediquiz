@@ -114,13 +114,14 @@
     #results { display:none; margin-top:2rem; text-align:center; }
     #scoreDisplay { font-size:1.4rem; font-weight:700; margin-top:0.5rem; }
     
-    /* Error/Success Message Styling */
+    /* Status Message Styling */
     #statusMessage { 
-      margin-top:0.8rem; 
-      font-weight:600; 
-      font-size:.95rem; 
-      padding: 10px;
+      margin-top:1rem; 
+      padding: 12px;
       border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.4;
     }
     .status-msg.success { color: #15803d; background: #dcfce7; border: 1px solid #bbf7d0; }
     .status-msg.error { color: #b91c1c; background: #fee2e2; border: 1px solid #fecaca; }
@@ -173,34 +174,28 @@
 </div>
 
 <script>
-  // ===== EmailJS CONFIG – MEDI QUIZ- HEMAL MALANI =====
-  // UPDATED: Using provided credentials
-  try {
-    emailjs.init({ publicKey: 'jpLkp6a1AzI_yB508' });
-  } catch(e) {
-    console.warn("EmailJS Init Warning:", e);
-  }
+  // ===== EmailJS CONFIGURATION =====
+  // 1. Keys & IDs
+  const PUBLIC_KEY = 'jpLkp6a1AzI_yB508';
+  const SERVICE_ID = 'service_kxs2x4e';
+  const TEMPLATE_ID = 'template_o5edseb'; // Updated Template ID
+  const RECEIVER_EMAIL = 'malani86@gmail.com';
 
-  const EMAILJS_SERVICE_ID = 'service_kxs2x4e'; // Same as before
-  const EMAILJS_TEMPLATE_ID = 'template_o5edseb'; // NEW TEMPLATE ID
-  const RECEIVER_EMAIL     = 'malani86@gmail.com';
-
-  // ===== Participant & timer state =====
-  let candidateName = '';
-  let seconds = 0;
-  let evaluated = false;
-
-  const timerEl = document.getElementById('timer');
-  setInterval(() => {
-    if (!evaluated && document.getElementById('quizCard').style.display !== 'none') {
-      seconds++;
-      const m = String(Math.floor(seconds/60)).padStart(2,'0');
-      const s = String(seconds%60).padStart(2,'0');
-      timerEl.textContent = `Time: ${m}:${s}`;
+  // 2. Initialize EmailJS safely
+  (function() {
+    try {
+      if (typeof emailjs !== 'undefined') {
+        emailjs.init({ publicKey: PUBLIC_KEY });
+        console.log("EmailJS initialized successfully.");
+      } else {
+        console.error("EmailJS SDK failed to load.");
+      }
+    } catch (error) {
+      console.error("EmailJS Initialization Error:", error);
     }
-  }, 1000);
+  })();
 
-  // ===== Questions list (AUDITED & REPLACED from NEW EXCEL) =====
+  // ===== DATA: 20 Questions (Audited) =====
   const questions = [
     {
       q:'1. What is the Best area (Size )of application of Divigel and which part of the Body.',
@@ -210,7 +205,7 @@
         'C. 400 cm2 on the thigh',
         'D. 200 cm2 on the arms'
       ],
-      answer:1 // Answer: B
+      answer:1 // B
     },
     {
       q:'2. Why do we need a only small area of application of Divigel',
@@ -220,15 +215,12 @@
         'C. Higher oestradiol absorption occurs due to a higher concentration gradient and skin layers acting as flow.',
         'D. Higher oestradiol absorption occurs due to a steep concentration gradient and skin layers acting as channels.'
       ],
-      answer:1 // Answer: B
+      answer:1 // B
     },
     {
       q:'3. Patients On Mirena need to take oral progesteron',
-      options:[
-        'True',
-        'False'
-      ],
-      answer:1 // Answer: False
+      options:['True', 'False'],
+      answer:1 // False
     },
     {
       q:'4. Divigel should be applied how many times a day',
@@ -238,7 +230,7 @@
         'C. Thrice a Day',
         'D. None of the above'
       ],
-      answer:0 // Answer: A
+      answer:0 // A
     },
     {
       q:'5. Hedrick et al., (2009) is a phase III, randomized, double-blind, parallel group, placebo-controlled, multicenter trial that was designed to compare the efficacy of ________________________________________________ with placebo for the treatment of MSVMS in postmenopausal women.',
@@ -248,7 +240,7 @@
         'C. 0.5, 1.0 and 1.5 g of E2 gel 0.1%',
         'D. 0.25, 0.6, and 1.0 g of E2 gel 0.1%'
       ],
-      answer:1 // Answer: B
+      answer:1 // B
     },
     {
       q:'6. State the maximum of doses levodopa , entacapone and carbidopa can be consumed',
@@ -258,7 +250,7 @@
         'C. Levodopa (1500mg ),Carbidopa (375mg) and Entacapone (2000mg)',
         'D. Levodopa (2000mg ),Carbidopa (250 mg) and Entacapone (2050mg)'
       ],
-      answer:2 // Answer: C
+      answer:2 // C
     },
     {
       q:'7. Stalevo Dosage availability in Malaysia',
@@ -268,17 +260,12 @@
         'C. Stalevo 175mg',
         'D. A & B'
       ],
-      answer:3 // Answer: D
+      answer:3 // D
     },
     {
       q:'8. Switching to Stalevo was associated with improved patient’s CGI-C score with __________ of patients reported an ‘improvement’.',
-      options:[
-        'A. 24%',
-        'B. 28%',
-        'C. 77%',
-        'D. 86%'
-      ],
-      answer:2 // Answer: C
+      options:['A. 24%', 'B. 28%', 'C. 77%', 'D. 86%'],
+      answer:2 // C
     },
     {
       q:'9. In Eggert et al. (2010), patients who switched to LCE observed significant improvements in: i. UPDRS-ADL, Part II; ii. UPDRS motor, Part III; iii. tremor, rigidity and akinesia; iv. QoL-VAS scores',
@@ -288,7 +275,7 @@
         'C. iii, iv',
         'D. i, ii, iii, iv'
       ],
-      answer:3 // Answer: D
+      answer:3 // D
     },
     {
       q:'10. Nomecomt Study what was the mean "ON" time and the mean "OFF" time in the entacapone Group.',
@@ -298,17 +285,12 @@
         'C. ONTIME (1.3 HOURS); OFF TIME (1.3 HOURS)',
         'D. ON TIME (1.2 HOURS) ; OFF TIME (1.3 HOURS)'
       ],
-      answer:1 // Answer: B
+      answer:1 // B
     },
     {
       q:'11. Among the PDSS items for all 39 patients who took bedtime Stalevo and completed the study, significant improvements are observed in __________ out of the 15 PDSS items.',
-      options:[
-        'A. 4',
-        'B. 5',
-        'C. 6',
-        'D. 7'
-      ],
-      answer:2 // Answer: C
+      options:['A. 4', 'B. 5', 'C. 6', 'D. 7'],
+      answer:2 // C
     },
     {
       q:'12. In KUOPPAMAKI et al the dosage of LCE vs CR-LC was',
@@ -318,17 +300,12 @@
         'C. LCE 200mg; CR-LC 100mg',
         'D. LCE 150mg; CR-LC 150mg'
       ],
-      answer:0 // Answer: A
+      answer:0 // A
     },
     {
       q:'13. In Patients expericing WO and Sleep disturbance, those taking bedtime Stalevo showed imporvements in motor and sleep symptoms at',
-      options:[
-        'A. 1 month',
-        'B. 2 months',
-        'C. 6 weeks',
-        'D. 3 months'
-      ],
-      answer:3 // Answer: D
+      options:['A. 1 month', 'B. 2 months', 'C. 6 weeks', 'D. 3 months'],
+      answer:3 // D
     },
     {
       q:'14. In the Lim Thien Thien write up what was the final Stalevo dosage',
@@ -338,7 +315,7 @@
         'C. Stalevo 100mg (4x)',
         'D. Stalevo 150mg (2x)'
       ],
-      answer:2 // Answer: C
+      answer:2 // C
     },
     {
       q:'15. Cuplaton Dosage for Patients with Post C-Section',
@@ -348,15 +325,12 @@
         'C. Four Tablets a day',
         'D. Contraindicated'
       ],
-      answer:2 // Answer: C
+      answer:2 // C
     },
     {
       q:'16. What are the core objective of the Direkwatanachai study? Is it To determine whether salbutamol delivered via pMDI + Volumatic® spacer or Easyhaler® (DPI) is as effective as nebulization in treating mild to moderate asthma exacerbations in pediatric patients.',
-      options:[
-        'True',
-        'False'
-      ],
-      answer:0 // Answer: True
+      options:['True', 'False'],
+      answer:0 // True
     },
     {
       q:'17. In Palandar et al what was the study about and the goal achieved with Easy haler',
@@ -366,7 +340,7 @@
         'C. Dose Delivery & Inspiratory flow',
         'D. Dose Delivery and Flow Conditions'
       ],
-      answer:0 // Answer: A
+      answer:0 // A
     },
     {
       q:'18. What is the Dosage of Budesionide that the symtomatic children started and followed through with in Vanto et al over 24 weeks',
@@ -376,7 +350,7 @@
         'C. (800mg - 200mg)',
         'D. (800mg - 600mg)'
       ],
-      answer:2 // Answer: C
+      answer:2 // C
     },
     {
       q:'19. Direkwatanachai et al., (2011) is a multicenter, randomized, controlled study that was conducted in children between 5 and 18 years of age who presented at an emergency or outpatient department. They were randomized to receive either i. 6 puffs of salbutamol via the pMDI with Volumatic®spacer, ii. 6 puffs of salbutamol via the Easyhaler iii. 0.15 mg/kg of salbutamol nebulized via oxygen (or compressed air) iv. placebo',
@@ -386,7 +360,7 @@
         'C. i, ii, iv',
         'D. ii, iv'
       ],
-      answer:1 // Answer: B
+      answer:1 // B
     },
     {
       q:'20. Simdax as an inodilator how many hours before a that binds to which part of the mucle cell',
@@ -396,31 +370,47 @@
         'C. tropomyosin',
         'D. tropomodulin'
       ],
-      answer:2 // Answer: C
+      answer:2 // C
     }
   ];
 
-  // ===== State & elements =====
+  // ===== LOGIC & STATE =====
   let currentQuestion = 0;
-  let answers = {}; // index → selected option (0-based)
+  let answers = {}; 
+  let candidateName = '';
+  let seconds = 0;
+  let evaluated = false;
+  let timerInterval;
 
   const startScreen = document.getElementById('startScreen');
-  const quizCard   = document.getElementById('quizCard');
-  const startBtn   = document.getElementById('startBtn');
+  const quizCard = document.getElementById('quizCard');
+  const startBtn = document.getElementById('startBtn');
   const startError = document.getElementById('startError');
-
   const questionContainer = document.getElementById('questionContainer');
-  const progressFill      = document.getElementById('progressFill');
-  const prevBtn           = document.getElementById('prevBtn');
-  const nextBtn           = document.getElementById('nextBtn');
-  const resultsDiv        = document.getElementById('results');
-  const scoreDisplay      = document.getElementById('scoreDisplay');
-  const restartBtn        = document.getElementById('restartBtn');
-  const statusMessage     = document.getElementById('statusMessage');
+  const progressFill = document.getElementById('progressFill');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const resultsDiv = document.getElementById('results');
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const restartBtn = document.getElementById('restartBtn');
+  const statusMessage = document.getElementById('statusMessage');
+  const timerEl = document.getElementById('timer');
 
-  // Start screen logic
+  // TIMER
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      if (!evaluated) {
+        seconds++;
+        const m = String(Math.floor(seconds/60)).padStart(2,'0');
+        const s = String(seconds%60).padStart(2,'0');
+        timerEl.textContent = `Time: ${m}:${s}`;
+      }
+    }, 1000);
+  }
+
+  // START
   startBtn.addEventListener('click', () => {
-    const name  = document.getElementById('studentName').value.trim();
+    const name = document.getElementById('studentName').value.trim();
     if (!name) {
       startError.textContent = 'Please enter your Name.';
       return;
@@ -428,10 +418,12 @@
     candidateName = name;
     startError.textContent = '';
     startScreen.style.display = 'none';
-    quizCard.style.display   = 'block';
+    quizCard.style.display = 'block';
+    startTimer();
     renderQuestion();
   });
 
+  // RENDER QUESTION
   function renderQuestion() {
     const q = questions[currentQuestion];
     progressFill.style.width = ((currentQuestion)/questions.length)*100 + '%';
@@ -443,7 +435,7 @@
       </div>
       <div class="options">
     `;
-    q.options.forEach((opt,idx)=>{
+    q.options.forEach((opt, idx) => {
       const isSelected = (answers[currentQuestion] === idx) ? 'selected' : '';
       html += `<div class="option ${isSelected}" data-index="${idx}">${opt}</div>`;
     });
@@ -451,10 +443,10 @@
 
     questionContainer.innerHTML = html;
 
+    // Attach Click Events
     const opts = document.querySelectorAll('.option');
-
-    opts.forEach(opt=>{
-      opt.addEventListener('click', ()=>{
+    opts.forEach(opt => {
+      opt.addEventListener('click', () => {
         const idx = parseInt(opt.dataset.index);
         answers[currentQuestion] = idx;
         opts.forEach(o => o.classList.remove('selected'));
@@ -463,18 +455,19 @@
     });
 
     prevBtn.disabled = currentQuestion === 0;
-    nextBtn.textContent = (currentQuestion === questions.length-1) ? 'Lock & Submit' : 'Next →';
+    nextBtn.textContent = (currentQuestion === questions.length - 1) ? 'Lock & Submit' : 'Next →';
   }
 
-  prevBtn.addEventListener('click', ()=>{
-    if (currentQuestion>0) {
+  // NAVIGATION
+  prevBtn.addEventListener('click', () => {
+    if (currentQuestion > 0) {
       currentQuestion--;
       renderQuestion();
     }
   });
 
-  nextBtn.addEventListener('click', ()=>{
-    if (currentQuestion < questions.length-1) {
+  nextBtn.addEventListener('click', () => {
+    if (currentQuestion < questions.length - 1) {
       currentQuestion++;
       renderQuestion();
     } else {
@@ -482,14 +475,19 @@
     }
   });
 
+  // FINISH & EVALUATE
   function finishQuiz() {
     evaluated = true;
+    clearInterval(timerInterval);
+    
     const totalQ = questions.length;
     let correct = 0;
-    questions.forEach((q,i)=>{
+    
+    questions.forEach((q, i) => {
       if (answers[i] === q.answer) correct++;
     });
 
+    // UI Updates
     scoreDisplay.textContent = `Your score: ${correct} / ${totalQ}`;
     questionContainer.style.display = 'none';
     document.querySelector('.nav-row').style.display = 'none';
@@ -498,55 +496,53 @@
     generateAndEmailResults(correct, totalQ);
   }
 
+  // EMAILJS SUBMISSION
   async function generateAndEmailResults(correct, totalQ) {
-    statusMessage.textContent = 'Submitting results...';
+    statusMessage.textContent = '⏳ Sending results... please wait.';
     statusMessage.className = '';
 
     try {
       const percent = Math.round((correct/totalQ)*100);
       const m = String(Math.floor(seconds/60)).padStart(2,'0');
       const s = String(seconds%60).padStart(2,'0');
+      const timeStr = `${m}:${s}`;
 
-      // Build HTML table with selected options
-      let tableHtml = '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;font-family:Arial, sans-serif;font-size:12px;">';
-      tableHtml += '<thead><tr style="background:#e5e7eb;"><th align="left">Q.No</th><th align="left">Question</th><th align="left">Selected Option</th></tr></thead><tbody>';
+      // Create HTML Table for Answers
+      let tableHtml = '<table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:12px; font-family:Arial;">';
+      tableHtml += '<tr style="background:#f3f4f6;"><th>#</th><th>Question</th><th>Selected Answer</th></tr>';
 
       questions.forEach((q, i) => {
         const userAnsIdx = answers[i];
-        const userAnsText = userAnsIdx !== undefined ? q.options[userAnsIdx] : 'Not answered';
+        const userAnsText = (userAnsIdx !== undefined) ? q.options[userAnsIdx] : 'Not Answered';
         tableHtml += `<tr>
           <td>${i + 1}</td>
           <td>${q.q}</td>
           <td>${userAnsText}</td>
         </tr>`;
       });
+      tableHtml += '</table>';
 
-      tableHtml += '</tbody></table>';
-
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      // Send to EmailJS
+      await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
         to_email: RECEIVER_EMAIL,
         from_name: candidateName,
         score: `${correct}/${totalQ} (${percent}%)`,
-        time_used: `${m}:${s}`,
+        time_used: timeStr,
         answers_table: tableHtml
       });
 
-      statusMessage.textContent = '✅ Results submitted successfully.';
+      statusMessage.textContent = '✅ Results sent successfully! You may close this tab.';
       statusMessage.className = 'status-msg success';
+
     } catch (e) {
       console.error("Submission Failed:", e);
-      // Detailed error message for debugging
-      let errorMsg = 'Unknown Error';
-      if (e.text) errorMsg = e.text;
-      else if (e.message) errorMsg = e.message;
-      else errorMsg = JSON.stringify(e);
-      
-      statusMessage.textContent = `❌ Submission Error: ${errorMsg}. Please contact admin.`;
+      let errorInfo = (e.text) ? e.text : 'Network or Config Error';
+      statusMessage.textContent = `❌ Failed to send results: ${errorInfo}`;
       statusMessage.className = 'status-msg error';
     }
   }
 
-  restartBtn.addEventListener('click', ()=>{ location.reload(); });
+  restartBtn.addEventListener('click', () => { location.reload(); });
 </script>
 </body>
 </html>
